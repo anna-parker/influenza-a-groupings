@@ -27,8 +27,7 @@ rule get_loculus_depositions:
     output:
         groups_json="results/groups.json",
     params:
-        log_level=LOG_LEVEL,
-        dataset_dir="genbank_assembly",
+        dataset_dir="results/genbank_assembly/ncbi_dataset/data",
     shell:
         """
         python {input.script} \
