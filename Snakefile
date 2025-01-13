@@ -24,6 +24,7 @@ rule get_loculus_depositions:
     input:
         script="scripts/group_segments.py",
         report="results/ncbi_dataset/data/assembly_data_report.jsonl",
+        ignore_list="error_sequences.txt",
     output:
         groups_json="results/groups.json",
     params:
@@ -33,4 +34,5 @@ rule get_loculus_depositions:
         python {input.script} \
         --dataset-dir {params.dataset_dir} \
         --output-file {output.groups_json} \
+        --ignore-list {input.ignore_list}
         """

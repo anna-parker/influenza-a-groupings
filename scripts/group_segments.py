@@ -6,8 +6,14 @@ import click
 @click.command()
 @click.option("--dataset-dir", required=True, type=click.Path(exists=True))
 @click.option("--output-file", required=True, type=click.Path(exists=False))
-def main(dataset_dir: str, output_file: str) -> None:
+@click.option("--ignore-list", required=True, type=click.Path(exists=False))
+def main(dataset_dir: str, output_file: str, ignore_list: str) -> None:
     fasta_dict = {}
+
+    with open(ignore_list, 'r') as file:
+        ignore = [line.strip() for line in file]
+
+    print(f"Ignoring {len(ignore)} segments")
 
     count = 0
     number_dict = {}
@@ -22,8 +28,10 @@ def main(dataset_dir: str, output_file: str) -> None:
                 segments = []
 
                 with open(file_path, "r") as f:
-                    segments = [record.id for record in SeqIO.parse(f, "fasta")]
+                    segments = [record.id for record in SeqIO.parse(f, "fasta") if record.id not in ignore]
                 number_dict[len(segments)] = number_dict.get(len(segments), 0) + 1
+                if file.split(".")[0] in fasta_dict:
+                    raise ValueError(f"Duplicate assembly found: {file.split('.')[0]}")
                 fasta_dict[file.split(".")[0]] = segments
 
     print(f"Found {count} assemblies")
